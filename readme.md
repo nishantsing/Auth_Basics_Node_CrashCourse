@@ -48,6 +48,26 @@ const authenticationMiddleware = async (req, res, next) => {
 router.route('/dashboard').get(authMiddleware, dashboard) // adding auth middleware for the route
 ```
 
+### Creating Admin Auth Middleware
+
+
+```js
+const adminAuthMiddleware = async (req, res, next)=>{
+    const userId = req.user // coming from the auth middleware
+    const user = await User.findById(userId);
+
+    if(!user.isAdmin){// isAdmin a property of User Schema
+        return res.status(404).send({message: 'Not Authorized' })
+    } 
+    next();
+
+}
+
+// routes/main
+router.route('/dashboard').get(authMiddleware, adminAuthMiddleware, dashboard) // Now only the admin can access the dashboard route
+
+```
+
 ### Error Handler Middleware
 
 ```js
