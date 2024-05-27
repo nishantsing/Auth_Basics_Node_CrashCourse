@@ -195,11 +195,13 @@ initializePassport(
 
 const users = []
 app.set('view-engine','ejs')
+// Change the directory for views
+// app.set('views', path.join(__dirname, 'templates')); // if not set look for views folder in root directory
 app.use(express.urlencoded({extended: false})) // get form data in req variable
 
 app.use(flash())
 app.use(session({
-    secret: something// add this to .env file
+    secret: something// add this to .env file and if it has space enclose in quotes
     resave:false,
     saveUninitialized:false
 }))
@@ -242,9 +244,13 @@ app.post('/register', checkNotAuthenticated, async (req,res)=>{
 
 })
 
-app.delete('/logout', (req, res) => {
-  req.logOut() //passport
-  res.redirect('/login')
+Passport 0.6.0, where req.logout now requires a callback function to handle asynchronous operations.
+app.delete('/logout', (req, res, next) => {
+  req.logout(err=>{
+    if(err){return next(err)}
+    res.redirect('/login')
+  }) //passport
+  
 })
 
 
